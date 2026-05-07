@@ -1,0 +1,78 @@
+/* FormHub 共用樣式 */
+body {
+    background: #f5f7fa;
+}
+
+.navbar-brand {
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+/* 表單列表 */
+.table th a { color: inherit; }
+.table th a:hover { color: #0d6efd; }
+
+/* 建構器 */
+#builder-canvas {
+    min-height: 400px;
+    padding: 0.5rem;
+    background: #fff;
+    border: 1px dashed #dee2e6;
+    border-radius: .5rem;
+}
+
+#q-list .q-card {
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+    background: #fff;
+}
+
+#q-list .q-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.q-handle:active {
+    cursor: grabbing !important;
+}
+
+.sortable-ghost {
+    opacity: 0.4;
+    background: #e7f1ff !important;
+}
+
+.sortable-chosen {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* 題型按鈕（左側） */
+.q-add-btn {
+    text-align: left;
+}
+
+/* 填答頁 */
+.rating-group .btn {
+    margin-right: .25rem;
+    margin-bottom: .25rem;
+}
+
+.q-block {
+    transition: opacity 0.2s ease;
+}
+
+/* 統計頁 */
+canvas {
+    max-width: 100%;
+}
+
+/* 表單卡片 */
+.card {
+    border: 1px solid rgba(0,0,0,0.075);
+}
+
+/* footer 對齊 */
+main { min-height: calc(100vh - 200px); }
+
+/* 印表 */
+@media print {
+    .navbar, .btn, .pagination, form button { display: none !important; }
+    body { background: #fff; }
+}

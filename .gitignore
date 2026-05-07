@@ -1,0 +1,22 @@
+# Dependencies
+/vendor/
+
+# Local config (含密碼)
+/config/config.php
+
+# Uploads
+/public/uploads/*
+!/public/uploads/.htaccess
+!/public/uploads/.gitkeep
+
+# IDE
+/.idea/
+/.vscode/
+*.iml
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs
+/logs/*.log

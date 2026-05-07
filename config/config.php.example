@@ -1,0 +1,74 @@
+<?php
+/**
+ * 應用程式設定範本
+ * 複製為 config.php 並填入實際值，請勿提交到版本控制
+ */
+return [
+    'app' => [
+        'name'      => 'FormHub',
+        'env'       => 'development', // development | production
+        'debug'     => true,
+        'base_url'  => '/',           // 部署於子目錄時改為 /formhub/
+        'timezone'  => 'Asia/Taipei',
+        'locale'    => 'zh-TW',       // 預設語系
+        'locales'   => ['zh-TW', 'en'],
+        'session'   => [
+            'name'      => 'FORMHUBSID',
+            'lifetime'  => 7200,
+            'secure'    => false,     // 正式環境 (https) 改 true
+            'httponly'  => true,
+            'samesite'  => 'Lax',
+        ],
+    ],
+
+    'db' => [
+        // EZCONNECT 字串 e.g. "//host:1521/ORCLPDB1"
+        'connection_string' => '//localhost:1521/ORCLPDB1',
+        'username'          => 'FORMHUB',
+        'password'          => 'change_me',
+        'charset'           => 'AL32UTF8',
+        'session_mode'      => OCI_DEFAULT,
+    ],
+
+    'ldap' => [
+        'enabled'    => true,
+        // 多台可填多筆 ldaps://dc1.corp.local
+        'hosts'      => ['ldaps://dc.corp.local'],
+        'port'       => 636,
+        'base_dn'    => 'DC=corp,DC=local',
+        // 例: CORP\\{username} 或 {username}@corp.local
+        'bind_format' => '{username}@corp.local',
+        // 搜尋使用者所屬群組用
+        'search_filter' => '(&(objectClass=user)(sAMAccountName={username}))',
+        'attributes'    => ['displayName', 'mail', 'memberOf', 'sAMAccountName'],
+        'options'       => [
+            // LDAP_OPT_PROTOCOL_VERSION => 3
+            17 => 3,
+            // LDAP_OPT_REFERRALS => 0
+            8  => 0,
+        ],
+        // 開發環境忽略憑證驗證 (正式請設 false 並安裝 CA)
+        'tls_skip_verify' => true,
+    ],
+
+    'upload' => [
+        'path'         => __DIR__ . '/../public/uploads',
+        'max_size'     => 10 * 1024 * 1024, // 10 MB
+        'allowed_mime' => [
+            'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'text/plain', 'text/csv',
+        ],
+    ],
+
+    'security' => [
+        'csrf_token_name' => '_csrf',
+        // 登入失敗鎖定門檻
+        'login_max_attempts' => 5,
+        'login_lockout_seconds' => 600,
+    ],
+];

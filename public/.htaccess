@@ -1,0 +1,26 @@
+# 將所有非實體檔案請求轉到 index.php
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # 既有檔案/目錄直接回應
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# 安全標頭
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# 隱藏 PHP 版本
+<IfModule mod_php.c>
+    php_flag expose_php Off
+</IfModule>
+
+DirectoryIndex index.php

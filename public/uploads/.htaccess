@@ -1,0 +1,13 @@
+# 上傳目錄禁止執行任何 script
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+
+<FilesMatch "\.(php|phtml|phar|cgi|pl|py|jsp|asp|sh|exe)$">
+    Require all denied
+</FilesMatch>
+
+Options -ExecCGI -Indexes
+RemoveHandler .php .phtml .phar
+RemoveType .php .phtml .phar
+AddType text/plain .php .phtml .phar
