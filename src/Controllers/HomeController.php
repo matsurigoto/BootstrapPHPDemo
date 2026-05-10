@@ -41,7 +41,16 @@ class HomeController extends Controller
                 'samesite'=> 'Lax',
             ]);
         }
-        $back = $r->server['HTTP_REFERER'] ?? '/forms';
+        // 防 open redirect：只接受同網域的 Referer，否則導回 /forms
+        $back = '/forms';
+        $ref = $r->server['HTTP_REFERER'] ?? '';
+        if ($ref !== '') {
+            $u = parse_url($ref);
+            $host = $r->server['HTTP_HOST'] ?? '';
+            if (is_array($u) && (empty($u['host']) || strcasecmp($u['host'], $host) === 0)) {
+                $back = $ref;
+            }
+        }
         return Response::redirect($back);
     }
 }

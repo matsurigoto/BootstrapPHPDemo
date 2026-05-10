@@ -16,9 +16,10 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h6 class="mb-3"><?= $e($q['label']) ?> <small class="text-muted">(<?= $e($q['type']) ?>)</small></h6>
+                    <?php $jsonFlags = JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT; ?>
                     <?php if ($kind === 'options'): ?>
                         <canvas id="chart-<?= $i ?>" height="180"></canvas>
-                        <script type="application/json" id="data-<?= $i ?>"><?= json_encode($agg['data'], JSON_UNESCAPED_UNICODE) ?></script>
+                        <script type="application/json" id="data-<?= $i ?>"><?= json_encode($agg['data'], $jsonFlags) ?></script>
                     <?php elseif ($kind === 'numeric'): ?>
                         <div class="row text-center">
                             <div class="col"><div class="text-muted small">Avg</div><strong><?= $e((string)round((float)$agg['data']['avg'], 2)) ?></strong></div>
@@ -28,11 +29,12 @@
                         </div>
                     <?php elseif ($kind === 'date'): ?>
                         <canvas id="chart-<?= $i ?>" height="180"></canvas>
-                        <script type="application/json" id="data-<?= $i ?>"><?= json_encode(['kind' => 'date', 'series' => $agg['data']], JSON_UNESCAPED_UNICODE) ?></script>
+                        <script type="application/json" id="data-<?= $i ?>"><?= json_encode(['kind' => 'date', 'series' => $agg['data']], $jsonFlags) ?></script>
                     <?php elseif ($kind === 'text'): ?>
                         <ul class="list-unstyled small mb-0" style="max-height:200px;overflow:auto;">
                             <?php foreach (($agg['data'] ?? []) as $sample): ?>
-                                <li class="border-bottom py-1"><?= nl2br($e((string)$sample)) ?></li>
+                                <?php $txt = is_array($sample) ? (string)($sample['value_text'] ?? '') : (string)$sample; ?>
+                                <li class="border-bottom py-1"><?= nl2br($e($txt)) ?></li>
                             <?php endforeach; ?>
                         </ul>
                     <?php elseif ($kind === 'file'): ?>

@@ -35,7 +35,28 @@ class App
 
         $this->c->set('config', fn() => $cfg);
         $this->c->set('rootDir', fn() => $rootDir);
-        $this->c->set('db', fn() => new OciConnection($cfg['db']));
+
+        $demo = !empty($cfg['app']['demo_mode']);
+        if ($demo) {
+            $storeFile = $rootDir . '/storage/demo.json';
+            $this->c->set('demoStore', fn() => new \App\Demo\DemoStore($storeFile));
+            $this->c->set('db',           fn($c) => new \App\Demo\DemoDb($c->get('demoStore')));
+            $this->c->set('ldap',         fn($c) => new \App\Demo\DemoLdapAuth($c->get('demoStore')));
+            $this->c->set('formRepo',     fn($c) => new \App\Demo\DemoFormRepository($c->get('demoStore')));
+            $this->c->set('responseRepo', fn($c) => new \App\Demo\DemoResponseRepository($c->get('demoStore')));
+            $this->c->set('builder',      fn($c) => new \App\Demo\DemoBuilderService($c->get('demoStore')));
+            $this->c->set('exporter',     fn($c) => new \App\Demo\DemoExporter($c->get('demoStore')));
+            $this->c->set('stats',        fn($c) => new \App\Demo\DemoStatsService($c->get('demoStore')));
+        } else {
+            $this->c->set('db', fn() => new OciConnection($cfg['db']));
+            $this->c->set('ldap', fn($c) => new LdapAuth($cfg['ldap'] ?? [], $c->get('db')));
+            $this->c->set('formRepo',     fn($c) => new \App\Models\FormRepository($c->get('db')));
+            $this->c->set('responseRepo', fn($c) => new \App\Models\ResponseRepository($c->get('db')));
+            $this->c->set('builder',      fn($c) => new \App\Services\FormBuilderService($c->get('db')));
+            $this->c->set('exporter',     fn($c) => new \App\Services\Exporter($c->get('db')));
+            $this->c->set('stats',        fn($c) => new \App\Services\StatsService($c->get('db')));
+        }
+
         $this->c->set('translator', function () use ($rootDir, $cfg) {
             $locale = $_COOKIE['locale']
                 ?? $cfg['app']['locale'] ?? 'zh-TW';
@@ -47,14 +68,8 @@ class App
         $this->c->set('view', function ($c) use ($rootDir, $cfg) {
             return new View($rootDir . '/templates', $cfg['app']['base_url'] ?? '/', $c->get('translator'));
         });
-        $this->c->set('ldap', fn($c) => new LdapAuth($cfg['ldap'] ?? [], $c->get('db')));
-        $this->c->set('formRepo',     fn($c) => new \App\Models\FormRepository($c->get('db')));
-        $this->c->set('responseRepo', fn($c) => new \App\Models\ResponseRepository($c->get('db')));
-        $this->c->set('builder',      fn($c) => new \App\Services\FormBuilderService($c->get('db')));
         $this->c->set('validator',    fn() => new \App\Services\Validator());
         $this->c->set('uploader',     fn() => new \App\Services\UploadService($cfg['upload'] ?? []));
-        $this->c->set('exporter',     fn($c) => new \App\Services\Exporter($c->get('db')));
-        $this->c->set('stats',        fn($c) => new \App\Services\StatsService($c->get('db')));
     }
 
     public function run(): void

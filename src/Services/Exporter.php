@@ -10,6 +10,21 @@ class Exporter
     public function __construct(private OciConnection $db) {}
 
     /**
+     * 防止 CSV / Formula Injection：以單引號前綴中和危險字元。
+     */
+    private static function safeCell($v): string
+    {
+        $s = (string)($v ?? '');
+        if ($s === '') return $s;
+        $first = $s[0];
+        if ($first === '=' || $first === '+' || $first === '-' || $first === '@'
+            || $first === "\t" || $first === "\r") {
+            return "'" . $s;
+        }
+        return $s;
+    }
+
+    /**
      * 串流匯出 CSV 到 stdout (UTF-8 BOM)。
      */
     public function streamCsv(int $formId): void
@@ -33,7 +48,7 @@ class Exporter
 
         $header = ['response_id', 'submitted_at', 'user', 'ip'];
         foreach ($questions as $q) $header[] = $q['label'];
-        fputcsv($out, $header);
+        fputcsv($out, array_map([self::class, 'safeCell'], $header), ',', '"', '\\');
 
         // 一次抓所有 responses 與 answers
         $responses = $this->db->fetchAll(
@@ -86,7 +101,7 @@ class Exporter
                     $row[] = $a['value_text'] ?? '';
                 }
             }
-            fputcsv($out, $row);
+            fputcsv($out, array_map([self::class, 'safeCell'], $row), ',', '"', '\\');
         }
         fclose($out);
     }

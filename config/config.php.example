@@ -15,7 +15,8 @@ return [
         'session'   => [
             'name'      => 'FORMHUBSID',
             'lifetime'  => 7200,
-            'secure'    => false,     // 正式環境 (https) 改 true
+            // 預設依 HTTPS 自動啟用；HTTP-only 本機可手動設 false
+            'secure'    => !empty($_SERVER['HTTPS']),
             'httponly'  => true,
             'samesite'  => 'Lax',
         ],
@@ -27,7 +28,7 @@ return [
         'username'          => 'FORMHUB',
         'password'          => 'change_me',
         'charset'           => 'AL32UTF8',
-        'session_mode'      => OCI_DEFAULT,
+        'session_mode'      => defined('OCI_DEFAULT') ? OCI_DEFAULT : 0,
     ],
 
     'ldap' => [
@@ -47,8 +48,8 @@ return [
             // LDAP_OPT_REFERRALS => 0
             8  => 0,
         ],
-        // 開發環境忽略憑證驗證 (正式請設 false 並安裝 CA)
-        'tls_skip_verify' => true,
+        // 預設驗證憑證；開發環境可代覆寫為 true。正式請安裝 CA root。
+        'tls_skip_verify' => false,
     ],
 
     'upload' => [
